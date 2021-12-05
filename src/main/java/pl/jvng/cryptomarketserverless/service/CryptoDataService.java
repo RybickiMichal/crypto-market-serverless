@@ -21,13 +21,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Named("fetchCrypto")
+@Named("crypto")
 public class CryptoDataService implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Logger LOG = Logger.getLogger(CryptoDataService.class);
-
-    @Inject
-    CryptoRepository cryptoRepository;
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, final Context context) {

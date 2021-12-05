@@ -2,11 +2,9 @@ package pl.jvng.cryptomarketserverless.repository;
 
 import pl.jvng.cryptomarketserverless.model.Crypto;
 
-import javax.enterprise.context.ApplicationScoped;
 import java.util.Arrays;
 import java.util.List;
 
-@ApplicationScoped
 public class CryptoRepository {
     private static List<Crypto> cryptos;
 

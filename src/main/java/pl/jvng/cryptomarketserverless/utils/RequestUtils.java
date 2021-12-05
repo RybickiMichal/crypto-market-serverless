@@ -31,15 +31,6 @@ public class RequestUtils {
     }
   }
 
-  public static APIGatewayProxyResponseEvent successResponse(Crypto crypto) {
-    try {
-      return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(cryptoWriter.writeValueAsString(crypto));
-    } catch (JsonProcessingException exception) {
-      LOG.error(exception);
-      return errorResponse(500, "Unable to write Crypto to JSON");
-    }
-  }
-
   public static APIGatewayProxyResponseEvent successResponse(CryptoPriceList cryptoPriceList) {
     try {
       return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(cryptoPriceListWriter.writeValueAsString(cryptoPriceList));

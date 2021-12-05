@@ -1,0 +1,65 @@
+service: quarkus-lambda
+
+frameworkVersion: ">=1.56.1"
+
+custom:
+  function:
+    addHandler: add
+    fetchHandler: fetchCrypto
+  dynamodb:
+    tableName: ${self:service}-${opt:stage, self:provider.stage}
+
+provider:
+  name: aws
+  stage: dev
+  region: eu-central-1
+  tracing:
+    lambda: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["CryptoDynamoDbTable", "Arn" ] }
+
+package:
+  individually: true
+
+functions:
+  fetchCrypto:
+    runtime: provided
+    handler: native.handler
+    package:
+      artifact: target/function.zip
+    environment:
+      DISABLE_SIGNAL_HANDLERS: true
+      QUARKUS_LAMBDA_HANDLER: ${self:custom.function.fetchHandler}
+      DYNAMO_TABLE_NAME: ${self:custom.dynamodb.tableName}
+      QUARKUS_DYNAMODB_AWS_REGION: ${self:provider.region}
+      QUARKUS_PROFILE: ${opt:stage, self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: fetchCrypto
+
+resources:
+  Resources:
+    CryptoDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: todoId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: todoId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.dynamodb.tableName}

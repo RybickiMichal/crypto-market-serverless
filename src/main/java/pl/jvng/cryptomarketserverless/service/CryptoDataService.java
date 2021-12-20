@@ -41,7 +41,7 @@ public class CryptoDataService implements RequestHandler<APIGatewayProxyRequestE
 
     public CryptoPrice fetchCryptoPrice(Crypto crypto) {
         Document document = initDocument(crypto.getDataSourceUrl());
-
+        LOG.info("starting fetching: " + crypto.getName());
         return CryptoPrice.builder()
                 .crypto(crypto)
                 .price(extractPrice(document.getElementsByClass("priceTitle").text()))
@@ -54,7 +54,7 @@ public class CryptoDataService implements RequestHandler<APIGatewayProxyRequestE
     }
 
     public List<CryptoPrice> fetchCryptoPrices(List<Crypto> cryptos) {
-        return cryptos.stream()
+        return cryptos.parallelStream()
                 .map(this::fetchCryptoPrice)
                 .collect(Collectors.toList());
     }
